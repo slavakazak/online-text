@@ -1,32 +1,84 @@
 * {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-		sans-serif;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 .App {
-	width: 100dvw;
-	height: 100dvh;
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+::selection {
+  background: #0091ea70;
+  /* color: #212121; */
+}
+
+.tabs {
+  width: 100%;
+  height: 30px;
+  background: #212121;
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+}
+
+.tab {
+  box-sizing: border-box;
+  height: 100%;
+  background: #212121;
+  color: #9e9e9e;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition-duration: 0.2s;
+  border-radius: 3px;
+}
+
+.tab.active {
+  color: #e0e0e0;
+}
+
+.tab:hover {
+  background: #424242;
 }
 
 textarea {
-	background: #212121;
-	color: #fafafa;
-	resize: none;
-	width: 100%;
-	height: 100%;
-	outline: none;
-	border: none;
-	padding: 15px;
-	font-size: 20px;
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  background: #212121;
+  color: #fafafa;
+  resize: none;
+  width: 100%;
+  flex-grow: 1;
+  outline: none;
+  border: none;
+  padding: 15px 15px 200px 15px;
+  font-size: 20px;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+@media (max-width: 800px) {
+  .tab {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  textarea {
+    padding: 10px 10px 100px 10px;
+    font-size: 14px;
+  }
 }
