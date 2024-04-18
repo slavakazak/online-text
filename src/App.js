@@ -16,7 +16,7 @@ export default function App() {
     return () => {
       setCurrent(tab)
       const dbRef = ref(getDatabase())
-      get(child(dbRef, tab)).then((snapshot) => {
+      get(child(dbRef, tab)).then(snapshot => {
         if (snapshot.exists()) {
           setText(snapshot.val())
         } else {
@@ -31,10 +31,10 @@ export default function App() {
 
   useEffect(() => {
     const db = getDatabase()
-    onValue(ref(db, '/'), snapshot => {
+    onValue(ref(db, current), snapshot => {
       const data = snapshot.val()
       console.log(data)
-      setText(data[current] || '')
+      setText(data)
     })
   }, [])
 
