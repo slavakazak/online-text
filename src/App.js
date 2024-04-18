@@ -31,12 +31,15 @@ export default function App() {
 
   useEffect(() => {
     const db = getDatabase()
-    onValue(ref(db, current), snapshot => {
-      if (snapshot.key == current) {
-        setText(snapshot.val())
-      }
+    tabs.forEach(tab => {
+      onValue(ref(db, tab), snapshot => {
+        if (snapshot.key == current) {
+          setText(snapshot.val())
+        }
+      })
     })
-  }, [current])
+
+  }, [tabs, current])
 
   return (
     <div className="App">
