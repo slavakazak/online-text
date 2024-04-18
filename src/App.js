@@ -31,9 +31,10 @@ export default function App() {
 
   useEffect(() => {
     const db = getDatabase()
-    onValue(ref(db, current), snapshot => {
+    onValue(ref(db, '/'), snapshot => {
       const data = snapshot.val()
-      setText(data)
+      console.log(data)
+      setText(data[current] || '')
     })
   }, [])
 
