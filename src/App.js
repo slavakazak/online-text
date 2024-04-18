@@ -33,10 +33,9 @@ export default function App() {
     const db = getDatabase()
     onValue(ref(db, current), snapshot => {
       const data = snapshot.val()
-      console.log(data)
       setText(data)
     })
-  }, [])
+  }, [current])
 
   return (
     <div className="App">
