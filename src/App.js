@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
-import { getDatabase, ref, set, get, child, onValue } from "firebase/database"
+import { getDatabase, ref, set, onValue } from "firebase/database"
 
 export default function App() {
-  const [tabs, setTabs] = useState({ 'All': '', 'Attic': '', 'Cartel': '' })
-  const [current, setCurrent] = useState('All')
+  const [tabs, setTabs] = useState({})
+  const [current, setCurrent] = useState(null)
 
   function changeHandler(tab) {
     return e => {
@@ -17,7 +17,11 @@ export default function App() {
   }
 
   useEffect(() => {
-    onValue(ref(getDatabase(), '/'), snapshot => setTabs(snapshot.val()))
+    onValue(ref(getDatabase(), '/'), snapshot => {
+      const data = snapshot.val()
+      setTabs(data)
+      setCurrent(Object.keys(data)[0])
+    })
   }, [])
 
   return (
@@ -31,6 +35,7 @@ export default function App() {
             {tab}
           </div>
         ))}
+        <div className="add" />
       </div>
       <div className="pages">
         {Object.keys(tabs).map((tab, i) => (
