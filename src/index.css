@@ -63,17 +63,27 @@ body {
   background: #424242;
 }
 
+.pages {
+  width: 100%;
+  flex-grow: 1;
+}
+
 textarea {
   background: #212121;
   color: #fafafa;
   resize: none;
   width: 100%;
-  flex-grow: 1;
+  height: 100%;
   outline: none;
   border: none;
   padding: 15px 15px 200px 15px;
   font-size: 20px;
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  display: none;
+}
+
+textarea.active {
+  display: block;
 }
 
 @media (max-width: 800px) {
