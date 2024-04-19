@@ -50,6 +50,9 @@ body {
   cursor: pointer;
   transition-duration: 0.2s;
   border-radius: 3px;
+  user-select: none;
+  max-width: calc(100vw - 6px);
+  overflow: hidden;
 }
 
 .tab.active {
@@ -58,6 +61,45 @@ body {
 
 .tab:hover {
   background: #424242;
+}
+
+.input_tab {
+  box-sizing: border-box;
+  height: 30px;
+  background: #424242;
+  padding: 0 10px;
+  display: none;
+  align-items: center;
+  border-radius: 3px;
+}
+
+.input_tab.active {
+  display: flex;
+}
+
+.input_tab input {
+  height: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  outline: none;
+  border: none;
+  line-height: 20px;
+  background: #616161;
+  padding: 0;
+  width: 50px;
+  min-width: 50px;
+  max-width: calc(100vw - 6px - 20px - 20px - 5px);
+  color: #e0e0e0;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+.input_tab svg {
+  width: 20px;
+  height: 20px;
+  fill: #e0e0e0;
+  cursor: pointer;
 }
 
 .add {
@@ -127,6 +169,15 @@ textarea.active {
   .tab {
     font-size: 14px;
     padding: 0 10px;
+  }
+
+  .input_tab {
+    padding: 0 5px;
+  }
+
+  .input_tab input {
+    font-size: 14px;
+    max-width: calc(100vw - 6px - 10px - 20px - 5px);
   }
 
   textarea {
