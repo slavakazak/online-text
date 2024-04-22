@@ -1,44 +1,69 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { getDatabase, ref, set, onValue } from "firebase/database"
+import Save from "./components/Save"
+import Trash from "./components/Trash"
 
 export default function App() {
   const [tabs, setTabs] = useState({})
   const [current, setCurrent] = useState(null)
   const [inputValue, setInputValue] = useState('')
-  const input = useRef(null)
+  const [input, setInput] = useState(null)
   const [add, setAdd] = useState(false)
+  const [change, setChange] = useState(null)
 
-  function changeHandler(tab) {
-    return e => {
-      const value = {
-        name: tabs[tab].name || tab,
-        text: e.target.value,
-        order: tabs[tab].order || 1,
-        visible: tabs[tab].visible || true
-      }
-      setTabs(prev => ({ ...prev, [tab]: value }))
-      set(ref(getDatabase(), tab), value)
+  const changeHandler = tab => e => {
+    const value = {
+      name: tabs[tab].name || tab,
+      text: e.target.value,
+      order: tabs[tab].order || 1,
+      visible: tabs[tab].visible || true
+    }
+    set(ref(getDatabase(), tab), value)
+  }
+
+  const tabClickHandler = tab => () => {
+    setCurrent(tab)
+    setAdd(false)
+    setInput(null)
+    if (tab !== change) setChange(null)
+  }
+
+  const contextMenuHandler = tab => e => {
+    setChange(tab)
+    setAdd(false)
+    setCurrent(tab)
+    const value = tabs[tab].name
+    const thisInput = e.currentTarget.querySelector('.name-input')
+    setInputValue(value)
+    setInput(thisInput)
+    thisInput.style.width = (value.length * 8.3) + 'px'
+    if (window.innerWidth > 800) {
+      thisInput.style.width = (value.length * 10) + 'px'
     }
   }
 
-  const tabClickHandler = tab => () => setCurrent(tab)
-
   function addClickHandler() {
+    const thisInput = document.querySelector('.input_tab .name-input')
+    setInput(thisInput)
+    thisInput.style.width = '50px'
+    setInputValue('')
+    setChange(null)
     setAdd(true)
   }
 
   function inputChangeHandler(e) {
     const value = e.target.value
     setInputValue(value)
-    input.current.style.width = (value.length * 8.3) + 'px'
+    const thisInput = e.target
+    thisInput.style.width = (value.length * 8.3) + 'px'
     if (window.innerWidth > 800) {
-      input.current.style.width = (value.length * 10) + 'px'
+      thisInput.style.width = (value.length * 10) + 'px'
     }
   }
 
-  function saveTab() {
+  function addTab() {
     const trimValue = inputValue.trim()
-    if (trimValue.length !== 0) {
+    if (trimValue.length !== 0 && add) {
       const value = {
         name: trimValue,
         text: '',
@@ -50,29 +75,71 @@ export default function App() {
       setCurrent(tab)
     }
     setInputValue('')
+    setInput(null)
     setAdd(false)
-    input.current.style.width = '50px'
+  }
+
+  function saveTab() {
+    const trimValue = inputValue.trim()
+    if (trimValue.length !== 0 && change) {
+      const value = {
+        name: trimValue,
+        text: tabs[change].text || '',
+        order: tabs[change].order || 1,
+        visible: tabs[change].visible || true
+      }
+      set(ref(getDatabase(), change), value)
+      setCurrent(change)
+    }
+    setInputValue('')
+    setInput(null)
+    setChange(null)
   }
 
   function keyDownHandler(e) {
     var key = e.which || e.keyCode;
-    if (key === 13) saveTab()
+    if (key === 13) {
+      addTab()
+      saveTab()
+    }
+  }
+
+  function trashHandler() {
+    if (change) {
+      const value = {
+        name: tabs[change].name || '',
+        text: tabs[change].text || '',
+        order: tabs[change].order || 1,
+        visible: false
+      }
+      set(ref(getDatabase(), change), value)
+    }
+    setInputValue('')
+    setInput(null)
+    setChange(null)
   }
 
   useEffect(() => {
     onValue(ref(getDatabase(), '/'), snapshot => {
       const data = snapshot.val()
-      setTabs(data)
-      setCurrent(prev => prev || Object.keys(data).sort((a, b) => data[a].order - data[b].order)[0])
+      if (data) {
+        setTabs(data)
+        setCurrent(prev => {
+          if (data[prev] && data[prev].visible) {
+            return prev
+          }
+          return Object.keys(data)
+            .filter(tab => data[tab].visible)
+            .sort((a, b) => data[a].order - data[b].order)[0]
+        })
+      }
     })
-    document.addEventListener('contextmenu', e => {
-      e.preventDefault()
-    })
+    document.addEventListener('contextmenu', e => e.preventDefault())
   }, [])
 
   useEffect(() => {
-    if (add) input.current.focus()
-  }, [add])
+    if (input) input.focus()
+  }, [input])
 
   const renderTabs = Object.keys(tabs)
     .filter(tab => tabs[tab].visible)
@@ -82,17 +149,19 @@ export default function App() {
     <div className="App">
       <div className="tabs">
         <div className={'input_tab' + (add ? ' active' : '')}>
-          <input ref={input} onChange={inputChangeHandler} value={inputValue} onKeyDown={keyDownHandler} />
-          <svg viewBox="0 0 24 24" onClick={saveTab}>
-            <path d="M19.3,5.3L9,15.6l-4.3-4.3l-1.4,1.4l5,5L9,18.4l0.7-0.7l11-11L19.3,5.3z" />
-          </svg>
+          <input className="name-input" onChange={inputChangeHandler} value={inputValue} onKeyDown={keyDownHandler} />
+          <Save onClick={addTab} />
         </div>
         {renderTabs.map((tab, i) => (
           <div
             key={i}
-            className={'tab' + (tab === current ? ' active' : '')}
-            onClick={tabClickHandler(tab)}>
-            {tabs[tab].name}
+            className={'tab' + (tab === current ? ' active' : '') + (tab === change ? ' change' : '')}
+            onClick={tabClickHandler(tab)}
+            onContextMenu={contextMenuHandler(tab)}>
+            <div className="name">{tabs[tab].name}</div>
+            <Trash onClick={trashHandler} />
+            <input className="name-input" onChange={inputChangeHandler} value={inputValue} onKeyDown={keyDownHandler} />
+            <Save onClick={saveTab} />
           </div>
         ))}
         {!add && <div className="add" onClick={addClickHandler} />}
