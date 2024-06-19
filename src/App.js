@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { getDatabase, ref, set, onValue } from "firebase/database"
 import Save from "./components/Save"
 import Trash from "./components/Trash"
+import Copy from "./components/Copy"
 
 export default function App() {
   const [tabs, setTabs] = useState({})
@@ -10,6 +11,8 @@ export default function App() {
   const [input, setInput] = useState(null)
   const [add, setAdd] = useState(false)
   const [change, setChange] = useState(null)
+  const [alert, setAlert] = useState(false)
+  const [alertText, setAlertText] = useState('')
 
   const changeHandler = tab => e => {
     const value = {
@@ -29,6 +32,7 @@ export default function App() {
   }
 
   const contextMenuHandler = tab => e => {
+    e.preventDefault()
     setChange(tab)
     setAdd(false)
     setCurrent(tab)
@@ -119,6 +123,33 @@ export default function App() {
     setChange(null)
   }
 
+  function copyClickHandler() {
+    const textComponent = document.querySelector('.pages textarea.active')
+    let selectedText = ''
+    if (textComponent.selectionStart !== undefined) {
+      const startPos = textComponent.selectionStart
+      const endPos = textComponent.selectionEnd
+      selectedText = textComponent.value.substring(startPos, endPos)
+    } else if (document.selection !== undefined) {
+      textComponent.focus()
+      const sel = document.selection.createRange()
+      selectedText = sel.text
+    }
+
+    if (!selectedText) {
+      setAlertText('Выделите текст для копирования')
+    } else {
+      navigator.clipboard.writeText(selectedText).then(() => {
+        setAlertText('Текст скопирован в буфер обмена')
+      }, err => {
+        setAlertText('Произошла ошибка при копировании текста')
+        console.error('Произошла ошибка при копировании текста: ', err)
+      })
+    }
+    setAlert(true)
+    setTimeout(() => setAlert(false), 1000)
+  }
+
   useEffect(() => {
     onValue(ref(getDatabase(), '/'), snapshot => {
       const data = snapshot.val()
@@ -177,6 +208,10 @@ export default function App() {
           />
         ))}
       </div>
+      <Copy onClick={copyClickHandler} />
+      {alert && <div className="alert-wrap">
+        <div className="alert">{alertText}</div>
+      </div>}
     </div>
   )
 }

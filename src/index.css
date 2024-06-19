@@ -15,6 +15,7 @@ body {
 }
 
 .App {
+  position: relative;
   width: 100dvw;
   height: 100dvh;
   display: flex;
@@ -205,6 +206,62 @@ textarea.active {
   display: block;
 }
 
+.copy {
+  position: absolute;
+  bottom: 15px;
+  right: 20px;
+  cursor: pointer;
+  fill: #e0e0e0;
+  width: 40px;
+  transition-duration: 0.2s;
+}
+
+.copy:hover {
+  fill: #fafafa;
+}
+
+.alert-wrap {
+  position: absolute;
+  bottom: 15px;
+  width: 100vw;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 15px;
+}
+
+.alert {
+  color: #fafafa;
+  font-size: 16px;
+  background: #424242;
+  padding: 5px 10px;
+  border-radius: 3px;
+  text-align: center;
+  user-select: none;
+  animation-duration: 1s;
+  animation-name: alert;
+  opacity: 0;
+}
+
+@keyframes alert {
+  0% {
+    opacity: 0;
+  }
+
+  45% {
+    opacity: 1;
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
 @media (max-width: 800px) {
   .tab {
     font-size: 14px;
@@ -227,5 +284,23 @@ textarea.active {
   textarea {
     padding: 10px 10px 100px 10px;
     font-size: 14px;
+  }
+
+  .copy,
+  .paste {
+    bottom: 10px;
+    right: 20px;
+    width: 30px;
+  }
+
+  .alert-wrap {
+    height: 30px;
+    bottom: 10px;
+    padding: 0 10px;
+  }
+
+  .alert {
+    font-size: 13px;
+    padding: 3px 5px;
   }
 }
